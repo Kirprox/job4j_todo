@@ -33,6 +33,22 @@ public class HbmTaskRepository implements TaskRepository {
     }
 
     @Override
+    public void update(Task task) {
+        Session session = sf.openSession();
+        try {
+            session.beginTransaction();
+            session.createQuery("UPDATE Task WHERE id = fId", Task.class)
+                    .setParameter("fId", task.getId()).executeUpdate();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            log.error("Ошибка при обновлении задачи по id: {}", task.getId(), e);
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
     public Task findById(int id) {
         Session session = sf.openSession();
         Task task = null;
@@ -48,6 +64,38 @@ public class HbmTaskRepository implements TaskRepository {
             session.close();
         }
         return task;
+    }
+
+    @Override
+    public List<Task> findAllDone() {
+        Session session = sf.openSession();
+        List<Task> result = new ArrayList<>();
+        try {
+            session.beginTransaction();
+            result = session.createQuery("FROM Task WHERE done = true", Task.class).list();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            log.error("Ошибка при получении завершенных задач", e);
+        } finally {
+            session.close();
+        }
+        return result;
+    }
+
+    @Override
+    public List<Task> findAllNew() {
+        Session session = sf.openSession();
+        List<Task> result = new ArrayList<>();
+        try {
+            session.beginTransaction();
+            result = session.createQuery("FROM Task WHERE done = false", Task.class).list();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            log.error("Ошибка при получении новых задач", e);
+        } finally {
+            session.close();
+        }
+        return result;
     }
 
     @Override

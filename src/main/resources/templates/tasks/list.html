@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/header :: header"></head>
+<body>
+<div th:replace="fragments/navigation :: navigation"></div>
+
+<div class="mb-3 text-center">
+    <a class="btn btn-outline-primary me-2"
+       th:href="@{/tasks}"
+       th:classappend="${filter} == null ? ' active' : ''">Все</a>
+
+    <a class="btn btn-outline-success me-2"
+       th:href="@{/tasks?filter=done}"
+       th:classappend="${filter} == 'done' ? ' active' : ''">Выполненные</a>
+
+    <a class="btn btn-outline-warning"
+       th:href="@{/tasks?filter=new}"
+       th:classappend="${filter} == 'new' ? ' active' : ''">Новые</a>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Название заметки</th>
+                <th scope="col">Дата создания</th>
+                <th scope="col">Состояние</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${task.description}"></td>
+                <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}"></td>
+                <td th:text="${task.done} ? 'Выполнено' : 'В процессе'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>

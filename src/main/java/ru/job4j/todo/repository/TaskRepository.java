@@ -6,8 +6,17 @@ import java.util.List;
 
 public interface TaskRepository {
     Task save(Task task);
+
+    void update(Task task);
+
     Task findById(int id);
+
     List<Task> findAll();
+
+    List<Task> findAllDone();
+
+    List<Task> findAllNew();
+
     void deleteById(int id);
 
 }
