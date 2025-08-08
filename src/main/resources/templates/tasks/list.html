@@ -7,7 +7,7 @@
 <div class="mb-3 text-center">
     <a class="btn btn-outline-primary me-2"
        th:href="@{/tasks}"
-       th:classappend="${filter} == null ? ' active' : ''">Все</a>
+       th:classappend="${filter} == '' ? ' active' : ''">Все</a>
 
     <a class="btn btn-outline-success me-2"
        th:href="@{/tasks?filter=done}"
@@ -19,6 +19,9 @@
 </div>
 
 <div class="container mt-4">
+    <a class="btn btn-outline-primary me-2" th:href="@{/tasks/create}">Добавить задание</a>
+</div>
+<div class="container mt-4">
     <div class="row">
         <table class="table table-hover">
             <thead>
@@ -29,16 +32,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="task : ${tasks}">
+            <tr th:each="task : ${tasks}"
+                th:attr="onclick=|window.location.href='@{/tasks/{taskId}(taskId=${task.id})}'|"
+                style="cursor: pointer;">
                 <td th:text="${task.description}"></td>
                 <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}"></td>
-                <td th:text="${task.done} ? 'Выполнено' : 'В процессе'"></td>
+                <td th:text="${task.done} ? 'Выполнено' : 'Не выполнено'"></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
-
-<footer th:include="fragments/footer :: footer"></footer>
+    <footer th:include="fragments/footer :: footer"></footer>
 </body>
 </html>

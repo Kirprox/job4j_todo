@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/header :: header"></head>
+<body>
+<div th:replace="fragments/navigation :: navigation"></div>
+
+<div class="container mt-3">
+    <div class="mb-3">
+        <label class="form-label"><b>Описание:</b></label>
+        <div class="form-control" th:text="${task.description}">Описание задачи</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><b>Создана:</b></label>
+        <div class="form-control" th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}"></div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><b>Статус:</b></label>
+        <div class="form-control" th:text="${task.done} ? 'Выполнено' : 'Не выполнено'"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            <form th:action="@{/tasks/update}" method="post">
+                <input type="hidden" name="id" th:value="${task.id}" />
+                <input type="hidden" name="description" th:value="${task.description}" />
+                <input type="hidden" name="created" th:value="${task.created}" />
+                <input type="hidden" name="done" value="true" />
+                <button type="submit" class="btn btn-success w-100" th:disabled="${task.done}">Выполнено</button>
+            </form>
+        </div>
+
+        <div class="col-4">
+            <a class="btn btn-warning w-100" th:href="@{/tasks/edit/{id}(id=${task.id})}">Редактировать</a>
+        </div>
+
+        <div class="col-4">
+            <a class="btn btn-danger w-100" th:href="@{/tasks/delete/{id}(id=${task.id})}">Удалить</a>
+        </div>
+    </div>
+
+</div>
+<footer th:include="fragments/footer :: footer"></footer>
+</body>
+</html>

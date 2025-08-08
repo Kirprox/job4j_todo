@@ -9,6 +9,7 @@ import ru.job4j.todo.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
@@ -37,8 +38,7 @@ public class HbmTaskRepository implements TaskRepository {
         Session session = sf.openSession();
         try {
             session.beginTransaction();
-            session.createQuery("UPDATE Task WHERE id = fId", Task.class)
-                    .setParameter("fId", task.getId()).executeUpdate();
+            session.update(task);
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
@@ -49,7 +49,7 @@ public class HbmTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Task findById(int id) {
+    public Optional<Task> findById(int id) {
         Session session = sf.openSession();
         Task task = null;
         try {
@@ -63,7 +63,7 @@ public class HbmTaskRepository implements TaskRepository {
         } finally {
             session.close();
         }
-        return task;
+        return Optional.ofNullable(task);
     }
 
     @Override
