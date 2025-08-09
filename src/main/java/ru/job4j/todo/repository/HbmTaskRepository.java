@@ -1,19 +1,18 @@
 package ru.job4j.todo.repository;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import ru.job4j.todo.exception.TaskNotFoundException;
+import ru.job4j.todo.exception.TaskSaveException;
+import ru.job4j.todo.exception.TaskUpdateException;
 import ru.job4j.todo.model.Task;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-@Slf4j
 public class HbmTaskRepository implements TaskRepository {
     private final SessionFactory sf;
 
@@ -26,7 +25,7 @@ public class HbmTaskRepository implements TaskRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
-            log.error("Ошибка при сохранении задачи: {}", task, e);
+            throw new TaskSaveException("Ошибка при сохранении задачи", e);
         } finally {
             session.close();
         }
@@ -42,14 +41,15 @@ public class HbmTaskRepository implements TaskRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
-            log.error("Ошибка при обновлении задачи по id: {}", task.getId(), e);
+            throw new TaskUpdateException(
+                    String.format("Ошибка при обновлении задачи по id: %d", task.getId()), e);
         } finally {
             session.close();
         }
     }
 
     @Override
-    public Optional<Task> findById(int id) {
+    public Task findById(int id) {
         Session session = sf.openSession();
         Task task = null;
         try {
@@ -59,11 +59,12 @@ public class HbmTaskRepository implements TaskRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
-            log.error("Ошибка при получении задачи по id: {}", id, e);
+            throw new TaskNotFoundException(
+                    String.format("Ошибка при получении задачи по id: %d", id), e);
         } finally {
             session.close();
         }
-        return Optional.ofNullable(task);
+        return task;
     }
 
     @Override
@@ -75,7 +76,8 @@ public class HbmTaskRepository implements TaskRepository {
             result = session.createQuery("FROM Task WHERE done = true", Task.class).list();
         } catch (Exception e) {
             session.getTransaction().rollback();
-            log.error("Ошибка при получении завершенных задач", e);
+            throw new TaskNotFoundException(
+                    "Ошибка при получении завершенных задач", e);
         } finally {
             session.close();
         }
@@ -91,7 +93,7 @@ public class HbmTaskRepository implements TaskRepository {
             result = session.createQuery("FROM Task WHERE done = false", Task.class).list();
         } catch (Exception e) {
             session.getTransaction().rollback();
-            log.error("Ошибка при получении новых задач", e);
+            throw new TaskNotFoundException("Ошибка при получении новых задач", e);
         } finally {
             session.close();
         }
@@ -108,7 +110,7 @@ public class HbmTaskRepository implements TaskRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
-            log.error("Ошибка при получении списка задач");
+            throw new TaskNotFoundException("Ошибка при получении списка задач", e);
         } finally {
             session.close();
         }
@@ -126,7 +128,8 @@ public class HbmTaskRepository implements TaskRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
-            log.error("Ошибка при удалении задачи под id: {}", id, e);
+            throw new TaskUpdateException(
+                    String.format("Ошибка при удалении задачи под id: %d", id), e);
         } finally {
             session.close();
         }

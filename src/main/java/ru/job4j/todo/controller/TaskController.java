@@ -5,9 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.service.TaskService;
-
 import java.util.Collection;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/tasks")
@@ -34,12 +32,8 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public String getTaskById(Model model, @PathVariable int id) {
-        Optional<Task> task = taskService.getTaskById(id);
-        if (task.isEmpty()) {
-            model.addAttribute("message", "Задача с указанным id не найдена");
-            return "errors/404";
-        }
-        model.addAttribute("task", task.get());
+        Task task = taskService.getTaskById(id);
+        model.addAttribute("task", task);
         return "tasks/one";
     }
 
@@ -50,46 +44,26 @@ public class TaskController {
 
     @PostMapping("/create")
     public String createTask(@ModelAttribute Task task, Model model) {
-        try {
-            taskService.save(task);
-            return "redirect:/tasks";
-        } catch (Exception e) {
-            model.addAttribute("message", e.getMessage());
-            return "errors/404";
-        }
+        taskService.save(task);
+        return "redirect:/tasks";
     }
 
     @GetMapping("/edit/{id}")
     public String editTask(Model model, @PathVariable int id) {
-        Optional<Task> task = null;
-        try {
-            task = taskService.getTaskById(id);
-            model.addAttribute("task", task.get());
-            return "tasks/edit";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        Task task = taskService.getTaskById(id);
+        model.addAttribute("task", task);
+        return "tasks/edit";
     }
 
     @PostMapping("/update")
     public String update(@ModelAttribute Task task, Model model) {
-        try {
-            taskService.update(task);
-            return "redirect:/tasks";
-        } catch (Exception e) {
-            model.addAttribute("message", e.getMessage());
-            return "errors/404";
-        }
+        taskService.update(task);
+        return "redirect:/tasks";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable int id) {
-        try {
-            taskService.deleteById(id);
-            return "redirect:/tasks";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        taskService.deleteById(id);
+        return "redirect:/tasks";
     }
 }
