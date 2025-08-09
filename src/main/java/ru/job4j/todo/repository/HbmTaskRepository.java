@@ -103,7 +103,7 @@ public class HbmTaskRepository implements TaskRepository {
     @Override
     public List<Task> findAll() {
         Session session = sf.openSession();
-        List<Task> result = new ArrayList<>();
+        List<Task> result;
         try {
             session.beginTransaction();
             result = session.createQuery("FROM Task", Task.class).list();
