@@ -8,4 +8,9 @@ public abstract class TaskException extends RuntimeException {
         super(message, cause);
         log.error(message, cause);
     }
+
+    public TaskException(String message) {
+        super(message);
+        log.error(message);
+    }
 }

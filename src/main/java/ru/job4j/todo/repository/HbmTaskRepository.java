@@ -1,137 +1,64 @@
 package ru.job4j.todo.repository;
 
 import lombok.AllArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.exception.TaskNotFoundException;
-import ru.job4j.todo.exception.TaskSaveException;
-import ru.job4j.todo.exception.TaskUpdateException;
 import ru.job4j.todo.model.Task;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @AllArgsConstructor
 public class HbmTaskRepository implements TaskRepository {
-    private final SessionFactory sf;
+    private final CrudRepository crudRepository;
 
     @Override
     public Task save(Task task) {
-        Session session = sf.openSession();
-        try {
-            session.beginTransaction();
-            session.save(task);
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            throw new TaskSaveException("Ошибка при сохранении задачи", e);
-        } finally {
-            session.close();
-        }
+        crudRepository.run(session -> session.save(task));
         return task;
     }
 
     @Override
     public void update(Task task) {
-        Session session = sf.openSession();
-        try {
-            session.beginTransaction();
-            session.update(task);
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            throw new TaskUpdateException(
-                    String.format("Ошибка при обновлении задачи по id: %d", task.getId()), e);
-        } finally {
-            session.close();
-        }
+        crudRepository.run(session -> session.update(task));
     }
 
     @Override
     public Task findById(int id) {
-        Session session = sf.openSession();
-        Task task = null;
-        try {
-            session.beginTransaction();
-            task = session.createQuery("FROM Task WHERE id = :fId", Task.class)
-                    .setParameter("fId", id).uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            throw new TaskNotFoundException(
-                    String.format("Ошибка при получении задачи по id: %d", id), e);
-        } finally {
-            session.close();
-        }
-        return task;
+        return crudRepository.optional(
+                "FROM Task WHERE id = :fId", Task.class,
+                Map.of("fId", id)
+        ).orElseThrow(() -> new TaskNotFoundException(
+                String.format("Задача с id %d не найдена", id)
+        ));
     }
 
     @Override
     public List<Task> findAllDone() {
-        Session session = sf.openSession();
-        List<Task> result = new ArrayList<>();
-        try {
-            session.beginTransaction();
-            result = session.createQuery("FROM Task WHERE done = true", Task.class).list();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            throw new TaskNotFoundException(
-                    "Ошибка при получении завершенных задач", e);
-        } finally {
-            session.close();
-        }
-        return result;
+        return crudRepository.query(
+                "FROM Task WHERE done = true", Task.class
+        );
     }
 
     @Override
     public List<Task> findAllNew() {
-        Session session = sf.openSession();
-        List<Task> result = new ArrayList<>();
-        try {
-            session.beginTransaction();
-            result = session.createQuery("FROM Task WHERE done = false", Task.class).list();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            throw new TaskNotFoundException("Ошибка при получении новых задач", e);
-        } finally {
-            session.close();
-        }
-        return result;
+        return crudRepository.query(
+                "FROM Task WHERE done = false", Task.class
+        );
     }
 
     @Override
     public List<Task> findAll() {
-        Session session = sf.openSession();
-        List<Task> result;
-        try {
-            session.beginTransaction();
-            result = session.createQuery("FROM Task", Task.class).list();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            throw new TaskNotFoundException("Ошибка при получении списка задач", e);
-        } finally {
-            session.close();
-        }
-        return result;
+        return crudRepository.query(
+                "FROM Task", Task.class
+        );
     }
 
     @Override
     public void deleteById(int id) {
-        Session session = sf.openSession();
-        try {
-            session.beginTransaction();
-            session.createQuery("DELETE FROM Task WHERE id = :fId")
-                    .setParameter("fId", id)
-                    .executeUpdate();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            throw new TaskUpdateException(
-                    String.format("Ошибка при удалении задачи под id: %d", id), e);
-        } finally {
-            session.close();
-        }
+        crudRepository.run(
+                "DELETE FROM Task WHERE id = :fId",
+                Map.of("fId", id)
+        );
     }
 }
