@@ -17,7 +17,7 @@ public class HbmUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         if (existsByLogin(user.getLogin())) {
-            throw new UserActionException("Пользователь с такой почтой уже существует");
+            throw new UserActionException("Пользователь с таким именем уже существует");
         }
         crudRepository.run(session -> session.save(user));
         return user;

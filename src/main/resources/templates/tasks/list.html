@@ -26,6 +26,7 @@
         <table class="table table-hover">
             <thead>
             <tr>
+                <th scope="col">Имя пользователя</th>
                 <th scope="col">Название заметки</th>
                 <th scope="col">Дата создания</th>
                 <th scope="col">Состояние</th>
@@ -35,6 +36,7 @@
             <tr th:each="task : ${tasks}"
                 th:attr="onclick=|window.location.href='@{/tasks/{taskId}(taskId=${task.id})}'|"
                 style="cursor: pointer;">
+                <td th:text="${task.user.name}"></td>
                 <td th:text="${task.description}"></td>
                 <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}"></td>
                 <td th:text="${task.done} ? 'Выполнено' : 'Не выполнено'"></td>
