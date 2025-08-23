@@ -30,6 +30,7 @@
                 <th scope="col">Название заметки</th>
                 <th scope="col">Дата создания</th>
                 <th scope="col">Состояние</th>
+                <th scope="col">Приоритет</th>
             </tr>
             </thead>
             <tbody>
@@ -40,6 +41,7 @@
                 <td th:text="${task.description}"></td>
                 <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}"></td>
                 <td th:text="${task.done} ? 'Выполнено' : 'Не выполнено'"></td>
+                <td th:text="${task.priority.name} "></td>
             </tr>
             </tbody>
         </table>

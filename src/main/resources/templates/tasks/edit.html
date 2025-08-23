@@ -8,6 +8,9 @@
         <input type="hidden" name="id" th:field="*{id}">
         <input type="hidden" name="created" th:field="*{created}">
         <input type="hidden" name="done" th:field="*{done}">
+        <input type="hidden" th:field="*{priority.id}" />
+        <input type="hidden" th:field="*{user.id}" />
+
         <div class="mb-3">
             <label for="description" class="form-label"><b>Описание</b></label>
             <textarea class="form-control" id="description" name="description" th:field="*{description}" rows="5"

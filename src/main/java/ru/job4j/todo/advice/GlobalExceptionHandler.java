@@ -21,6 +21,12 @@ public class GlobalExceptionHandler {
         return "errors/404";
     }
 
+    @ExceptionHandler(PriorityNotFoundException.class)
+    public String handlePriorityNotFoundException(PriorityNotFoundException e, Model model) {
+        model.addAttribute("message", e.getMessage());
+        return "errors/404";
+    }
+
     @ExceptionHandler(UserLoginException.class)
     public String handleUserLoginException(UserLoginException e, Model model) {
         model.addAttribute("error", e.getMessage());

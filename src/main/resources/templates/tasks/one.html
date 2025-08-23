@@ -20,6 +20,11 @@
         <div class="form-control" th:text="${task.done} ? 'Выполнено' : 'Не выполнено'"></div>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label"><b>Приоритет:</b></label>
+        <div class="form-control" th:text="${task.priority.name}"></div>
+    </div>
+
     <div class="row">
         <div class="col-4">
             <form th:action="@{/tasks/update}" method="post">
@@ -27,6 +32,10 @@
                 <input type="hidden" name="description" th:value="${task.description}" />
                 <input type="hidden" name="created" th:value="${task.created}" />
                 <input type="hidden" name="done" value="true" />
+
+                <input type="hidden" name="priority.id" th:value="${task.priority.id}" />
+                <input type="hidden" name="user.id" th:value="${task.user.id}" />
+
                 <button type="submit" class="btn btn-success w-100" th:disabled="${task.done}">Выполнено</button>
             </form>
         </div>

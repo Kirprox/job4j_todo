@@ -27,6 +27,7 @@ public class SimpleTaskService implements TaskService {
 
     @Override
     public Task getTaskById(int id) {
+        Task task = taskRepository.findById(id);
         return taskRepository.findById(id);
     }
 
