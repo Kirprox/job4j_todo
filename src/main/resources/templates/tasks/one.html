@@ -22,7 +22,17 @@
 
     <div class="mb-3">
         <label class="form-label"><b>Приоритет:</b></label>
-        <div class="form-control" th:text="${task.priority.name}"></div>
+        <div class="form-control" th:text="${task.priority != null} ? ${task.priority.name} : 'Отсутствует' "></div>
+    </div>
+
+    <div class="mb-3">
+        <label><b>Категории</b></label>
+        <div th:if="${#lists.isEmpty(task.categories)}">
+            Отсутствуют
+        </div>
+        <div th:each="category : ${task.categories}">
+            <span th:text="${category.name}"></span><br/>
+        </div>
     </div>
 
     <div class="row">
@@ -32,10 +42,8 @@
                 <input type="hidden" name="description" th:value="${task.description}" />
                 <input type="hidden" name="created" th:value="${task.created}" />
                 <input type="hidden" name="done" value="true" />
-
-                <input type="hidden" name="priority.id" th:value="${task.priority.id}" />
+                <input type="hidden" name="priority.id" th:if="${task.priority != null}" th:value="${task.priority.id}" />
                 <input type="hidden" name="user.id" th:value="${task.user.id}" />
-
                 <button type="submit" class="btn btn-success w-100" th:disabled="${task.done}">Выполнено</button>
             </form>
         </div>

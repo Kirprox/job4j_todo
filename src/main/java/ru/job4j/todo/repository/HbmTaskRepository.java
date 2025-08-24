@@ -26,7 +26,8 @@ public class HbmTaskRepository implements TaskRepository {
     @Override
     public Task findById(int id) {
         return crudRepository.optional(
-                "FROM Task f JOIN FETCH f.priority WHERE f.id = :fId", Task.class,
+                "FROM Task f LEFT JOIN FETCH f.priority "
+                        + "LEFT JOIN FETCH f.categories WHERE f.id = :fId", Task.class,
                 Map.of("fId", id)
         ).orElseThrow(() -> new TaskNotFoundException(
                 String.format("Задача с id %d не найдена", id)
@@ -36,21 +37,21 @@ public class HbmTaskRepository implements TaskRepository {
     @Override
     public List<Task> findAllDone() {
         return crudRepository.query(
-                "FROM Task f JOIN FETCH f.priority WHERE done = true", Task.class
+                "FROM Task f  LEFT JOIN FETCH f.priority WHERE done = true", Task.class
         );
     }
 
     @Override
     public List<Task> findAllNew() {
         return crudRepository.query(
-                "FROM Task f JOIN FETCH f.priority WHERE done = false", Task.class
+                "FROM Task f  LEFT JOIN FETCH f.priority WHERE done = false", Task.class
         );
     }
 
     @Override
     public List<Task> findAll() {
         return crudRepository.query(
-                "FROM Task f JOIN FETCH f.priority", Task.class
+                "FROM Task f  LEFT JOIN FETCH f.priority", Task.class
         );
     }
 

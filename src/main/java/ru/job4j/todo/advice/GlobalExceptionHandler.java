@@ -27,6 +27,12 @@ public class GlobalExceptionHandler {
         return "errors/404";
     }
 
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public String handleCategoryNotFoundException(CategoryNotFoundException e, Model model) {
+        model.addAttribute("message", e.getMessage());
+        return "errors/404";
+    }
+
     @ExceptionHandler(UserLoginException.class)
     public String handleUserLoginException(UserLoginException e, Model model) {
         model.addAttribute("error", e.getMessage());

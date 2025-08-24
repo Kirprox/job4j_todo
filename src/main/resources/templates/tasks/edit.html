@@ -16,6 +16,19 @@
             <textarea class="form-control" id="description" name="description" th:field="*{description}" rows="5"
                       placeholder="Введите описание задачи"></textarea>
         </div>
+
+        <div class="mb-3">
+            <label><b>Категории</b></label>
+            <div th:each="category : ${categories}">
+                <label>
+                    <input type="checkbox" name="categoryIds"
+                           th:value="${category.id}"
+                           th:checked=${task.categories.contains(category)}>
+                    <span th:text="${category.name}"></span>
+                </label>
+            </div>
+        </div>
+
         <div class="mb-3 row">
             <div class="col-6"></div>
             <div class="col-6">
